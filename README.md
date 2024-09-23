@@ -280,3 +280,5 @@ or
 
 These warning come from the various plugins that are used by the template. They are not harmful
 and can be ignored. The warnings are meant for the plugin authors, not for you, the game developer.
+#   S i d e T o S i d e G a m e  
+ 
