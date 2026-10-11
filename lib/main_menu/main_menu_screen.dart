@@ -35,7 +35,7 @@ class MainMenuScreen extends StatelessWidget {
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 500),
                   child: const Text(
-                    'Lets gooo khaye l ALEX.',
+                    'Dodge. Collect. Survive.',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'Press Start 2P',
@@ -64,6 +64,14 @@ class MainMenuScreen extends StatelessWidget {
               child: const Text('Settings'),
             ),
             _gap,
+            WobblyButton(
+              onPressed: () {
+                audioController.playSfx(SfxType.buttonTap);
+                GoRouter.of(context).go('/profile');
+              },
+              child: const Text('Profile'),
+            ),
+            _gap,
             Padding(
               padding: const EdgeInsets.only(top: 32),
               child: ValueListenableBuilder<bool>(
@@ -77,7 +85,7 @@ class MainMenuScreen extends StatelessWidget {
               ),
             ),
             _gap,
-            const Text('Built by Wadih Issa'),
+            const Text('Built by Alexander Issa & Wadih Issa'),
           ],
         ),
       ),

@@ -45,3 +45,12 @@ app.*.map.json
 
 .metadata
 pubspec.lock
+
+# Local / secret config (never commit)
+/android/local.properties
+/android/key.properties
+*.jks
+*.keystore
+google-services.json
+GoogleService-Info.plist
+.vscode/
