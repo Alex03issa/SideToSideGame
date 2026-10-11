@@ -8,17 +8,17 @@ Side To Side is a mobile game project from November 2024. It started from the of
 
 - the camera uses a fixed **720 x 1600** portrait resolution and the app locks the device to portrait,
 - the tap-to-jump mechanic was replaced by **drag-to-move** controls (the player is moved freely with a finger and clamped to the visible play area),
-- the parallax background scrolls **vertically** using custom scenery layers,
+- the parallax background scrolls **vertically** using custom scenery layers, and obstacles and embers fall from the top of the screen to match,
 - new **Profile**, **Sign In**, **Sign Up** and **Skins** screens were added to the menu flow, with their own colour palette.
 
 ## Features
 
 - Main menu with Play, Settings and Profile, plus an audio on/off toggle
 - Level selection with two levels (win score 3 and 5; level 2 can spawn tall obstacles) and saved progress/best times
-- Gameplay: drag the character to collect embers (points) and avoid randomly spawned obstacles; touching an obstacle resets the score
+- Gameplay: drag the character anywhere on the screen to collect embers (points) and dodge obstacles that fall from the top; touching an obstacle resets the score
 - Win dialog when the level's ember target is reached
 - Vertical multi-layer parallax background
-- Background music and sound effects (jump, score, damage, button clicks) via `flame_audio` / `audioplayers`
+- Background music and sound effects (score, damage, button clicks) via `flame_audio` / `audioplayers`
 - Settings screen (player name, music/sound toggles) persisted with `shared_preferences`
 - Profile screen, Sign In / Sign Up forms and a Skins screen with player and background skin tabs (UI only — no authentication backend is wired up yet)
 - Retro NES-style UI (`nes_ui`) with the Press Start 2P font
@@ -43,7 +43,7 @@ lib/
 │   ├── endless_world.dart        # World: spawning obstacles/points, scoring, win logic
 │   ├── game_screen.dart          # GameWidget + overlays
 │   ├── components/               # player (drag controls), obstacle, point, background
-│   └── effects/                  # hurt / jump effects
+│   └── effects/                  # hurt effect
 ├── level_selection/              # Levels and level selection screen
 ├── main_menu/                    # Main menu
 ├── profile/                      # Profile, sign-in, sign-up, skins screens
@@ -61,8 +61,8 @@ android/ ios/ web/ linux/ macos/ windows/   # Platform runners
 Prerequisites: [Flutter SDK](https://docs.flutter.dev/get-started/install) 3.19+ and an Android emulator/device (or Xcode for iOS).
 
 ```bash
-git clone https://github.com/Alex03issa/side-to-side.git
-cd side-to-side
+git clone https://github.com/Alex03issa/SideToSideGame.git
+cd SideToSideGame
 flutter pub get
 flutter run
 ```
@@ -83,7 +83,7 @@ dart run flutter_launcher_icons
 
 - Sign In / Sign Up / Profile are front-end screens only; the profile shows placeholder name and best-score values.
 - Music tracks are CC0 from OpenGameArt (see `assets/music/CREDITS.TXT`); base sprites and template structure come from the Flutter Endless Runner template.
-- The Android package id is still the template's `com.example.endless_runner`.
+- The Dart package is `side_to_side` and the Android application id / iOS bundle id is `com.alexissa.sidetoside` (renamed from the template's `com.example.endless_runner`; change it before publishing to a store if you prefer another id). The desktop and web runners still use the template's `endless_runner` binary name.
 - Some deeply nested Android files (`MainActivity.kt`, launch background, styles, launcher icons) were restored from the standard Flutter template when preparing this repository. Run `dart run flutter_launcher_icons` to apply the custom icon in `assets/icons/icon.png`.
 
 ## Branches
