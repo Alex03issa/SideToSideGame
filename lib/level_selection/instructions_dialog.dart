@@ -76,7 +76,7 @@ class _InstructionsDialogState extends State<InstructionsDialog> {
                       const Flexible(
                         flex: 7,
                         child: Text(
-                          'Tap/click on the screen to jump in that direction, tap again to double jump.',
+                          'Drag Dash around the screen to dodge the falling obstacles.',
                         ),
                       ),
                     ],

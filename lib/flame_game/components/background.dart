@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/parallax.dart';
+import 'package:flutter/foundation.dart';
 
 /// The [Background] is a component that is composed of multiple scrolling
 /// images which form a parallax, a way to simulate movement and depth in the
@@ -21,7 +22,9 @@ class Background extends ParallaxComponent {
       ParallaxImageData('scenery/BG4.png'),
     ];
 
-    // The base velocity is now moving upwards (negative Y-axis).
+    // A negative Y velocity makes the layers scroll down the screen, so it
+    // looks like the player is moving upwards. Obstacles and embers fall with
+    // the same world speed to match.
     final baseVelocity = Vector2(0, -speed / pow(2, layers.length));
 
     // The multiplier delta affects the speed difference between the layers.
@@ -35,9 +38,10 @@ class Background extends ParallaxComponent {
         velocityMultiplierDelta: velocityMultiplierDelta,
         filterQuality: FilterQuality.none,
       );
-      print("Parallax loaded successfully");
     } catch (e) {
-      print("Error loading parallax: $e");
+      // Keep the game playable without a background if an image fails to
+      // load.
+      debugPrint('Error loading parallax background: $e');
     }
   }
 }
