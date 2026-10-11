@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../audio/audio_controller.dart';
 import '../audio/sounds.dart';
@@ -12,6 +13,11 @@ import '../style/wobbly_button.dart';
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
 
+  Future<bool> isLoggedIn() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') != null && prefs.getInt('userId') != null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final palette = context.watch<Palette>();
@@ -21,33 +27,39 @@ class MainMenuScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: palette.backgroundMain.color,
       body: ResponsiveScreen(
-        squarishMainArea: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/banner.png',
-                filterQuality: FilterQuality.none,
+squarishMainArea: Center(
+  child: Padding(
+    padding: const EdgeInsets.only(top: 0), // Move the banner closer to the top
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start, // Align content to the top
+      children: [
+        Image.asset(
+          'assets/images/banner.png',
+          filterQuality: FilterQuality.none,
+          width: 400, // Set desired width
+          height: 250, // Set desired height
+          fit: BoxFit.contain, // Optional: Adjust scaling
+        ),
+        const SizedBox(height: 50),
+        Transform.rotate(
+          angle: -0.1,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: const Text(
+              'Can you beat the 300 SCORE!!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Press Start 2P',
+                fontSize: 24,
+                height: 1,
               ),
-              _gap,
-              Transform.rotate(
-                angle: -0.1,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 500),
-                  child: const Text(
-                    'Lets gooo khaye l ALEX.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Press Start 2P',
-                      fontSize: 32,
-                      height: 1,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
+      ],
+    ),
+  ),
+),
         rectangularMenuArea: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -60,8 +72,19 @@ class MainMenuScreen extends StatelessWidget {
             ),
             _gap,
             WobblyButton(
-              onPressed: () => GoRouter.of(context).push('/settings'),
+              onPressed: () {
+                audioController.playSfx(SfxType.buttonTap);
+                GoRouter.of(context).go('/settings');
+              },
               child: const Text('Settings'),
+            ),
+            _gap,
+            WobblyButton(
+              onPressed: () async {
+                audioController.playSfx(SfxType.buttonTap);
+                GoRouter.of(context).go('/profile');
+              },
+              child: const Text('Profile'),
             ),
             _gap,
             Padding(
@@ -77,7 +100,7 @@ class MainMenuScreen extends StatelessWidget {
               ),
             ),
             _gap,
-            const Text('Built by Wadih Issa'),
+            const Text('Built by Wadih Issa & Alexander Issa'),
           ],
         ),
       ),
