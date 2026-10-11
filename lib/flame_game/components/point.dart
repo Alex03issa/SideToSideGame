@@ -35,22 +35,22 @@ class Point extends SpriteAnimationComponent
   @override
   void update(double dt) {
     super.update(dt);
-    // We need to move the component to the left together with the speed that we
-    // have set for the world plus the speed set for the point, so that it
-    // is visually moving to the left in the world.
+    // The background scrolls downwards, so the embers fall down the screen
+    // with the speed that we have set for the world plus the speed set for the
+    // point, so that they move a bit faster than the obstacles.
     // `dt` here stands for delta time and it is the time, in seconds, since the
     // last update ran. We need to multiply the speed by `dt` to make sure that
-    // the speed of the obstacles are the same no matter the refresh rate/speed
+    // the speed of the points are the same no matter the refresh rate/speed
     // of your device.
-    position.x -= (world.speed + speed) * dt;
+    position.y += (world.speed + speed) * dt;
 
     // When the component is no longer visible on the screen anymore, we
     // remove it.
-    // The position is defined from the upper left corner of the component (the
-    // anchor) and the center of the world is in (0, 0), so when the components
-    // position plus its size in X-axis is outside of minus half the world size
-    // we know that it is no longer visible and it can be removed.
-    if (position.x + size.x / 2 < -world.size.x / 2) {
+    // The position is the centre of the component (the anchor) and the center
+    // of the world is in (0, 0), so when the top edge of the component
+    // (position.y - size.y / 2) is below half the world height we know that it
+    // is no longer visible and it can be removed.
+    if (position.y - size.y / 2 > world.size.y / 2) {
       removeFromParent();
     }
   }

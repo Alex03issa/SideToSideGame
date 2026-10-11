@@ -55,11 +55,8 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
   void update(double dt) {
     super.update(dt);
 
-    // Keep the player within the screen and ground bounds.
-    position.clamp(
-      Vector2.zero(),
-      Vector2(world.size.x - size.x, world.groundLevel - size.y / 2),
-    );
+    // Keep the player inside the visible play area.
+    _keepInsideVisibleArea();
 
     _lastPosition.setFrom(position); // Update the last position.
   }
@@ -83,17 +80,39 @@ class Player extends SpriteAnimationGroupComponent<PlayerState>
   }
 
   /// Handle drag updates to move the player.
-@override
-void onDragUpdate(DragUpdateEvent event) {
-  // Update the player’s position based on the drag.
-  position.add(event.delta);
+  @override
+  void onDragUpdate(DragUpdateEvent event) {
+    super.onDragUpdate(event);
+    // Move the player by the distance the finger moved since the last update.
+    // The event positions are in the player's own coordinate space (which
+    // rotates while the hurt effect plays), so they are converted to the
+    // world's coordinate space before the delta is applied.
+    final worldDelta = localToParent(event.localEndPosition) -
+        localToParent(event.localStartPosition);
+    position.add(worldDelta);
+    _keepInsideVisibleArea();
+  }
 
-  // Ensure the player stays within the screen's visible area.
-  position.clamp(
-    Vector2(0, 0), // Top-left corner
-    Vector2(world.size.x - size.x, world.size.y - size.y), // Bottom-right corner
-  );
-}
+  /// Clamps the player so that it is always fully inside the part of the world
+  /// that the camera shows.
+  ///
+  /// The camera uses a fixed resolution and is centred on (0, 0), so the
+  /// visible world goes from -width/2 to width/2 and from -height/2 to
+  /// height/2. The player's anchor is its centre, so half of its size is
+  /// subtracted on every side.
+  void _keepInsideVisibleArea() {
+    final visibleArea = game.camera.visibleWorldRect;
+    position.clamp(
+      Vector2(
+        visibleArea.left + size.x / 2,
+        visibleArea.top + size.y / 2,
+      ),
+      Vector2(
+        visibleArea.right - size.x / 2,
+        visibleArea.bottom - size.y / 2,
+      ),
+    );
+  }
 }
 
 enum PlayerState {

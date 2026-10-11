@@ -69,21 +69,21 @@ class Obstacle extends SpriteComponent with HasWorldReference<EndlessWorld> {
 
   @override
   void update(double dt) {
-    // We need to move the component to the left together with the speed that we
-    // have set for the world.
+    // The background scrolls downwards, so the obstacles fall down the screen
+    // together with the speed that we have set for the world.
     // `dt` here stands for delta time and it is the time, in seconds, since the
     // last update ran. We need to multiply the speed by `dt` to make sure that
     // the speed of the obstacles are the same no matter the refresh rate/speed
     // of your device.
-    position.x -= world.speed * dt;
+    position.y += world.speed * dt;
 
     // When the component is no longer visible on the screen anymore, we
     // remove it.
-    // The position is defined from the upper left corner of the component (the
-    // anchor) and the center of the world is in (0, 0), so when the components
-    // position plus its size in X-axis is outside of minus half the world size
-    // we know that it is no longer visible and it can be removed.
-    if (position.x + size.x < -world.size.x / 2) {
+    // The position is the bottom-left corner of the component (the anchor) and
+    // the center of the world is in (0, 0), so when the top edge of the
+    // component (position.y - size.y) is below half the world height we know
+    // that it is no longer visible and it can be removed.
+    if (position.y - size.y > world.size.y / 2) {
       removeFromParent();
     }
   }

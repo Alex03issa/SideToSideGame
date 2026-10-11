@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:flame/events.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +18,13 @@ import 'game_screen.dart';
 /// but in this game all components that go outside of the size of the viewport
 /// are removed, since the player can't interact with those anymore.
 ///
-/// The [EndlessWorld] has two mixins added to it:
-///  - The [TapCallbacks] that makes it possible to react to taps (or mouse
-///  clicks) on the world.
-///  - The [HasGameReference] that gives the world access to a variable called
-///  `game`, which is a reference to the game class that the world is attached
-///  to.
-class EndlessWorld extends World with TapCallbacks, HasGameReference {
+/// The camera looks at (0, 0), so the centre of the screen is the origin of the
+/// world: the visible area goes from -size/2 to size/2 on both axes.
+///
+/// The [EndlessWorld] has the [HasGameReference] mixin, which gives the world
+/// access to a variable called `game`, a reference to the game class that the
+/// world is attached to.
+class EndlessWorld extends World with HasGameReference {
   EndlessWorld({
     required this.level,
     required this.playerProgress,
@@ -55,23 +54,17 @@ class EndlessWorld extends World with TapCallbacks, HasGameReference {
   /// The random number generator that is used to spawn periodic components.
   final Random _random;
 
-  /// The gravity is defined in virtual pixels per second squared.
-  /// These pixels are in relation to how big the [FixedResolutionViewport] is.
-  final double gravity = 30;
-
-  /// Where the ground is located in the world and things should stop falling.
-  late final double groundLevel = (size.y / 2) - (size.y / 5);
-
   @override
   Future<void> onLoad() async {
     // Used to keep track of when the level started, so that we later can
     // calculate how long time it took to finish the level.
     timeStarted = DateTime.now();
 
-    // The player is the component that we control when we tap the screen, the
-    // Dash in this case.
+    // The player is the component that we control by dragging, the Dash in
+    // this case. It starts in the lower part of the screen, centred
+    // horizontally, since obstacles and embers come from the top.
     player = Player(
-      position: Vector2(-size.x / 3, groundLevel - 900),
+      position: Vector2(0, size.y / 4),
       addScore: addScore,
       resetScore: resetScore,
     );
@@ -84,9 +77,14 @@ class EndlessWorld extends World with TapCallbacks, HasGameReference {
           canSpawnTall: level.canSpawnTall,
         ),
         period: 5,
-        area: Rectangle.fromPoints(
-          Vector2(size.x / 2, groundLevel),
-          Vector2(size.x / 2, groundLevel),
+        // Obstacles spawn just above the top edge of the screen, anywhere
+        // across its width, and then fall down. Their anchor is bottom-left,
+        // so the right limit leaves room for the widest obstacle (200).
+        area: Rectangle.fromLTRB(
+          -size.x / 2,
+          -size.y / 2,
+          size.x / 2 - 200,
+          -size.y / 2,
         ),
         random: _random,
       ),
@@ -97,9 +95,13 @@ class EndlessWorld extends World with TapCallbacks, HasGameReference {
         factory: (_) => Point(),
         minPeriod: 3.0,
         maxPeriod: 5.0 + level.number,
-        area: Rectangle.fromPoints(
-          Vector2(size.x / 2, -size.y / 2 + Point.spriteSize.y),
-          Vector2(size.x / 2, groundLevel),
+        // Embers spawn just above the top edge of the screen, anywhere across
+        // its width, and then fall down. Their anchor is their centre.
+        area: Rectangle.fromLTRB(
+          -size.x / 2 + Point.spriteSize.x / 2,
+          -size.y / 2 - Point.spriteSize.y / 2,
+          size.x / 2 - Point.spriteSize.x / 2,
+          -size.y / 2 - Point.spriteSize.y / 2,
         ),
         random: _random,
       ),
@@ -145,21 +147,6 @@ class EndlessWorld extends World with TapCallbacks, HasGameReference {
   /// Sets the player's score to 0 again.
   void resetScore() {
     scoreNotifier.value = 0;
-  }
-
-  /// [onTapDown] is called when the player taps the screen and then calculates
-  /// if and how the player should jump.
-  @override
-  void onTapDown(TapDownEvent event) {
-    // Which direction the player should jump.
-    final towards = (event.localPosition - player.position)..normalize();
-    // If the tap is underneath the player no jump is triggered, but if it is
-    // above the player it triggers a jump, even though the player might be in
-    // the air. This makes it possible to later implement double jumping inside
-    // of the `player` class if one would want to.
-    if (towards.y.isNegative) {
-     // player.jump(towards);
-    }
   }
 
   /// A helper function to define how fast a certain level should be.
