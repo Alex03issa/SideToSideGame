@@ -1,5 +1,5 @@
-name: endless_runner
-description: A Flame game template built with Flutter.
+name: side_to_side
+description: A portrait drag-to-move arcade game built with Flutter and Flame.
 
 # Prevent accidental publishing to pub.dev.
 publish_to: 'none'
